@@ -1,0 +1,46 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model base_dados {
+  codigo  String  @id @db.VarChar(10)
+  nome    String  @db.VarChar(50)
+  arquivo Bytes
+  nivel   nivel[]
+}
+
+model capitulo {
+  codigo    String  @id @db.VarChar(10)
+  titulo    String
+  descricao String
+  nivel     nivel[]
+}
+
+model nivel {
+  id               Int         @id @default(autoincrement())
+  codigo_cap       String      @db.VarChar(10)
+  narrativa        String
+  enunciado        String
+  dica             String
+  personagem_nome  String
+  solucao          String?
+  feedback_correto String?
+  feedback_errado  String?
+  codigo_base      String?     @db.VarChar(10)
+  base_dados       base_dados? @relation(fields: [codigo_base], references: [codigo])
+  capitulo         capitulo    @relation(fields: [codigo_cap], references: [codigo])
+  personagem       personagem  @relation(fields: [personagem_nome], references: [nome])
+}
+
+model personagem {
+  id     Int     @id @default(autoincrement())
+  nome   String  @unique
+  imagem Bytes?
+  nivel  nivel[]
+}
