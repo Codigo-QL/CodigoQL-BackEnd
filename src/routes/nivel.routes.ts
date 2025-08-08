@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { getAllNiveis } from "../controllers/nivel.controller";
+import { getNivelById } from "../controllers/nivel.controller";
 
 const router = Router();
 
-router.get("/", getAllNiveis);
+router.get("/:id", getNivelById);
 
 export default router;
