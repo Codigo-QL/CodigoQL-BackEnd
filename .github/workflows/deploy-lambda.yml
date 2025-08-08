@@ -8,26 +8,42 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - run: npm ci
 
-      - uses: aws-actions/amazon-ecr-login@v2
+      - name: Install dependencies
+        run: npm ci
+
+      # Configura credenciais e região AWS
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-      - run: docker build -t ${{ secrets.ECR_REPOSITORY }}:latest .
-      - run: docker push ${{ secrets.ECR_REPOSITORY }}:latest
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
 
-      - run: pip install awscli
-      - run: |
+      - name: Build Docker image (latest)
+        run: |
+          docker build \
+            -t ${{ secrets.ECR_REPOSITORY }}:latest \
+            .
+
+      - name: Push Docker image (latest)
+        run: docker push ${{ secrets.ECR_REPOSITORY }}:latest
+
+      - name: Update Lambda to use latest image
+        run: |
           aws lambda update-function-code \
             --region ${{ secrets.AWS_REGION }} \
             --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
             --image-uri ${{ secrets.ECR_REPOSITORY }}:latest
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
