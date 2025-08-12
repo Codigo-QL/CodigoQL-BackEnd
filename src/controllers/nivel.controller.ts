@@ -3,11 +3,34 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export const getAllNiveis = async (req: Request, res: Response) => {
+export const getNivelById = async (req: Request, res: Response) => {
   try {
-    const niveis = await prisma.nivel.findMany();
-    res.json(niveis);
+    const { id } = req.params;
+
+    const nivel = await prisma.nivel.findUnique({
+      where: { id: Number(id) },
+      include: {
+        capitulo: {
+          select: {
+            codigo: true,
+            titulo: true,
+          },
+        },
+        personagem: {
+          select: {
+            nome: true,
+            imagem: true,
+          },
+        },
+      },
+    });
+
+    if (!nivel) {
+      return res.status(404).json({ error: "Nível não encontrado." });
+    }
+
+    res.json(nivel);
   } catch (error) {
-    res.status(500).json({ error: "Erro ao buscar níveis." });
+    res.status(500).json({ error: "Erro ao buscar nível." });
   }
 };
