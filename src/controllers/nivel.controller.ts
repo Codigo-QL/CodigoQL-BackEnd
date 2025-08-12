@@ -10,13 +10,19 @@ export const getNivelById = async (req: Request, res: Response) => {
     const nivel = await prisma.nivel.findUnique({
       where: { id: Number(id) },
       include: {
+        capitulo: {
+          select: {
+            codigo: true,
+            titulo: true,
+          },
+        },
         personagem: {
           select: {
             nome: true,
-            imagem: true
-          }
-        }
-      }
+            imagem: true,
+          },
+        },
+      },
     });
 
     if (!nivel) {
