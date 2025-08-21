@@ -36,6 +36,7 @@ model nivel {
   base_dados       base_dados? @relation(fields: [codigo_base], references: [codigo])
   capitulo         capitulo    @relation(fields: [codigo_cap], references: [codigo])
   personagem       personagem  @relation(fields: [personagem_nome], references: [nome])
+  submissao        submissao[]
 }
 
 model personagem {
@@ -43,4 +44,15 @@ model personagem {
   nome   String  @unique
   imagem Bytes?
   nivel  nivel[]
+}
+
+model submissao {
+  id             Int      @id @default(autoincrement())
+  sessao_id      String
+  matricula      String?
+  nivel_id       Int
+  acertou        Boolean
+  data_resolucao DateTime @default(now())
+  resposta       String
+  nivel          nivel    @relation(fields: [nivel_id], references: [id])
 }
