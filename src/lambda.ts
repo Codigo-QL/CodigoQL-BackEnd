@@ -1,7 +1,7 @@
 import serverlessExpress from "@codegenie/serverless-express";
 import app from "./index";
 
-const binaryMimeTypes: string[] = [
+const binaryContentTypes: string[] = [
   'image/jpeg',
   'image/png',
   'image/gif',
@@ -14,5 +14,7 @@ const binaryMimeTypes: string[] = [
 
 export const handler = serverlessExpress({
   app,
-  binaryMimeTypes,
+  binarySettings: {
+    contentTypes: binaryContentTypes,
+  }
 });
