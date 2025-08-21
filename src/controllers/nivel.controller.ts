@@ -96,13 +96,8 @@ const compareResultsIgnoringColumnOrder = (resultA: any[], resultB: any[]): bool
     return true;
   }
 
-  console.log(resultA);
-  console.log(resultB);
-
   const sortedValuesA = resultA.map(row => Object.values(row).map(String).sort());
   const sortedValuesB = resultB.map(row => Object.values(row).map(String).sort());
-  console.log(sortedValuesA);
-  console.log(sortedValuesB);
 
   for (let i = 0; i < sortedValuesA.length; i++) {
     if (JSON.stringify(sortedValuesA[i]) !== JSON.stringify(sortedValuesB[i])) {
@@ -115,7 +110,7 @@ const compareResultsIgnoringColumnOrder = (resultA: any[], resultB: any[]): bool
 
 export const validateQuery = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { userQuery } = req.body;
+  const { userQuery, sessao_id, matricula } = req.body;
 
   if (!userQuery) {
     return res.status(400).json({ error: "A query do usuário é obrigatória." });
@@ -154,6 +149,16 @@ export const validateQuery = async (req: Request, res: Response) => {
     db.close();
 
     const isCorrect = compareResultsIgnoringColumnOrder(userResult, solutionResult);
+
+    await prisma.submissao.create({
+        data: {
+            sessao_id: sessao_id,
+            matricula: matricula === 'anonimo' ? null : matricula,
+            nivel_id: Number(id),
+            resposta: userQuery,
+            acertou: isCorrect
+        }
+    });
 
     if (isCorrect) {
       res.json({ correct: true, feedback: nivel.feedback_correto });
