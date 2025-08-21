@@ -27,8 +27,8 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
+    "@codegenie/serverless-express": "^4.17.0",
     "@prisma/client": "^6.13.0",
-    "@vendia/serverless-express": "^4.12.6",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^4.21.2"
