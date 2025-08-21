@@ -47,10 +47,10 @@ export const getDatabaseFile = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Arquivo de banco de dados não encontrado." });
     }
 
-    res.setHeader('Content-Type', 'application/x-sqlite3');
-    res.setHeader('Content-Disposition', `attachment; filename="${baseDados.nome}.sqlite"`);
-    
-    res.send(baseDados.arquivo);
+    const buffer = Buffer.from(baseDados.arquivo);
+    const base64Data = buffer.toString('base64');
+
+    res.json({ data: base64Data });
 
   } catch (error) {
     console.error("Erro ao buscar arquivo de banco de dados:", error);
