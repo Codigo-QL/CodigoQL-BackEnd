@@ -22,8 +22,7 @@ export const getNivelById = async (req: Request, res: Response) => {
         },
         personagem: {
           select: {
-            nome: true,
-            imagem: true,
+            nome: true
           },
         },
       },
