@@ -56,3 +56,8 @@ model submissao {
   resposta       String
   nivel          nivel    @relation(fields: [nivel_id], references: [id])
 }
+
+model aluno {
+  id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email String @unique
+}
