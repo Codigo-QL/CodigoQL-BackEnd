@@ -54,10 +54,13 @@ model submissao {
   acertou        Boolean
   data_resolucao DateTime @default(now())
   resposta       String
+  alunoId        String?  @db.Uuid
+  aluno          aluno?   @relation(fields: [alunoId], references: [id])
   nivel          nivel    @relation(fields: [nivel_id], references: [id])
 }
 
 model aluno {
-  id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email String @unique
+  id        String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email     String      @unique
+  submissao submissao[]
 }
