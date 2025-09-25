@@ -16,16 +16,17 @@ export const login = async (req: Request, res: Response) => {
     const idToken = authorization.split('Bearer ')[1];
     const decodedToken = await firebaseAdmin.auth().verifyIdToken(idToken);
 
-    const { email } = decodedToken;
+    const { uid, email } = decodedToken;
 
     if (!email) {
         return res.status(400).send({ message: 'Email não encontrado no token.' });
     }
 
     const aluno = await prisma.aluno.upsert({
-      where: { email },
-      update: {},
+      where: { id: uid },
+      update: { email },
       create: {
+        id: uid,
         email
       },
     });
