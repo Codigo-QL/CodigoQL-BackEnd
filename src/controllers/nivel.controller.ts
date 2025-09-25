@@ -149,14 +149,20 @@ export const validateQuery = async (req: Request, res: Response) => {
 
     const isCorrect = compareResultsIgnoringColumnOrder(userResult, solutionResult);
 
+    const submissionData: any = {
+      nivel_id: Number(id),
+      resposta: userQuery,
+      acertou: isCorrect,
+      sessao_id: sessao_id,
+      matricula,
+    }
+
+    if (req.user) {
+      submissionData.alunoId = req.user.uid
+    }
+
     await prisma.submissao.create({
-        data: {
-            sessao_id: sessao_id,
-            matricula: matricula === 'anonimo' ? null : matricula,
-            nivel_id: Number(id),
-            resposta: userQuery,
-            acertou: isCorrect
-        }
+      data: submissionData,
     });
 
     if (isCorrect) {
