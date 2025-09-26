@@ -10,8 +10,8 @@ COPY tsconfig.json ./
 COPY prisma ./prisma               
 COPY src ./src
 
-RUN npm run build                  
 RUN npx prisma generate            
+RUN npm run build                  
 
 # Etapa final para Lambda
 FROM public.ecr.aws/lambda/nodejs:20
