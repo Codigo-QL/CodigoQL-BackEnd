@@ -5,6 +5,34 @@ const prisma = new PrismaClient();
 
 export const getAllCapitulos = async (req: Request, res: Response) => {
   try {
+    if (!req.user) {
+      const capitulos = await prisma.capitulo.findMany({
+        select: {
+          codigo: true,
+          titulo: true,
+          descricao: true,
+          nivel: {
+            select: {
+              id: true,
+              personagem: {
+                select: {
+                  nome: true,
+                },
+              },
+            },
+            orderBy: {
+              id: 'asc'
+            }
+          },
+        },
+        orderBy: {
+          codigo: 'asc'
+        }
+      });
+      return res.json(capitulos);
+    }
+
+    const alunoId = req.user.uid;
     const capitulos = await prisma.capitulo.findMany({
       select: {
         codigo: true,
@@ -18,6 +46,16 @@ export const getAllCapitulos = async (req: Request, res: Response) => {
                 nome: true,
               },
             },
+            _count: {
+              select: {
+                submissao: {
+                  where: {
+                    alunoId,
+                    acertou: true
+                  }
+                }
+              },
+            }
           },
           orderBy: {
             id: 'asc'
