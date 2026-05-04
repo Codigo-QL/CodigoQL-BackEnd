@@ -4,6 +4,7 @@ import { firebaseAdmin } from '../services/firebase';
 
 const prisma = new PrismaClient();
 
+
 export const login = async (req: Request, res: Response) => {
   try {
     const authorization = req.headers.authorization;
